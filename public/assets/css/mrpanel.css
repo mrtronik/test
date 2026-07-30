@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer components {
+
+    /* =========================
+       BUTTON BASE
+    ========================= */
+
+    .btn {
+        @apply inline-flex items-center justify-center gap-2
+        rounded-md font-medium transition duration-200
+        focus:outline-none focus:ring-2 focus:ring-offset-2
+        disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+
+    /* =========================
+       SIZE
+    ========================= */
+
+    .btn-cilik {
+        @apply px-3 py-1.5 text-sm;
+    }
+
+    .btn-normal {
+        @apply px-4 py-2 text-sm;
+    }
+
+    .btn-besar {
+        @apply px-5 py-3 text-base;
+    }
+
+
+    /* =========================
+       PRIMARY
+    ========================= */
+
+    .btn-primary {
+        @apply bg-blue-600 text-white
+        hover:bg-blue-700
+        focus:ring-blue-500;
+    }
+
+    .btn-primary-outline {
+        @apply border border-blue-600 text-blue-600 bg-transparent
+        hover:bg-blue-600 hover:text-white
+        focus:ring-blue-500;
+    }
+
+
+    /* =========================
+       SUCCESS
+    ========================= */
+
+    .btn-success {
+        @apply bg-green-600 text-white
+        hover:bg-green-700
+        focus:ring-green-500;
+    }
+
+    .btn-success-outline {
+        @apply border border-green-600 text-green-600 bg-transparent
+        hover:bg-green-600 hover:text-white
+        focus:ring-green-500;
+    }
+
+
+    /* =========================
+       DANGER
+    ========================= */
+
+    .btn-danger {
+        @apply bg-red-600 text-white
+        hover:bg-red-700
+        focus:ring-red-500;
+    }
+
+    .btn-danger-outline {
+        @apply border border-red-600 text-red-600 bg-transparent
+        hover:bg-red-600 hover:text-white
+        focus:ring-red-500;
+    }
+
+
+    /* =========================
+       WARNING
+    ========================= */
+
+    .btn-warning {
+        @apply bg-yellow-500 text-white
+        hover:bg-yellow-600
+        focus:ring-yellow-400;
+    }
+
+    .btn-warning-outline {
+        @apply border border-yellow-500 text-yellow-600 bg-transparent
+        hover:bg-yellow-500 hover:text-white
+        focus:ring-yellow-400;
+    }
+
+
+    /* =========================
+       INFO
+    ========================= */
+
+    .btn-info {
+        @apply bg-cyan-600 text-white
+        hover:bg-cyan-700
+        focus:ring-cyan-500;
+    }
+
+    .btn-info-outline {
+        @apply border border-cyan-600 text-cyan-600 bg-transparent
+        hover:bg-cyan-600 hover:text-white
+        focus:ring-cyan-500;
+    }
+
+
+    /* =========================
+       DARK
+    ========================= */
+
+    .btn-dark {
+        @apply bg-gray-800 text-white
+        hover:bg-gray-900
+        focus:ring-gray-700;
+    }
+
+    .btn-dark-outline {
+        @apply border border-gray-800 text-gray-800 bg-transparent
+        hover:bg-gray-800 hover:text-white
+        focus:ring-gray-700;
+    }
+
+
+    /* =========================
+       LIGHT
+    ========================= */
+
+    .btn-light {
+        @apply bg-gray-100 text-gray-800
+        hover:bg-gray-200
+        focus:ring-gray-300;
+    }
+
+    .btn-light-outline {
+        @apply border border-gray-300 text-gray-700 bg-transparent
+        hover:bg-gray-100
+        focus:ring-gray-300;
+    }
+
+}
