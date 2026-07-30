@@ -18,6 +18,7 @@ fi
 
 # ─── Version check ────────────────────────────
 proses "Cek versi OS"
+titik "Cek versi OS"
 VERSION_NUM=$(echo "$VERSION_ID" | tr -d '.')
 if [ "$VERSION_NUM" -lt 2204 ]; then
     err "Ubuntu 22.04+ required. Found: $VERSION_ID"
@@ -32,12 +33,14 @@ sukses "Berjalan sebagai root"
 
 # ─── Architecture ─────────────────────────────
 proses "Cek arsitektur"
+titik "Cek arsitektur"
 ARCH=$(uname -m)
 if [ "$ARCH" != "x86_64" ] && [ "$ARCH" != "aarch64" ]; then
     err "Unsupported architecture: $ARCH"
 fi
 sukses "Arsitekstur: $ARCH"
 proses "Cek RAM"
+titik "Cek RAM"
 # ─── RAM check ────────────────────────────────
 TOTAL_RAM=$(free -m | awk '/^Mem:/{print $2}')
 if [ "$TOTAL_RAM" -lt 512 ]; then

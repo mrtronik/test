@@ -8,12 +8,14 @@ banner "Langkah ke 2 dari 8: Dependensi Sistem"
 export DEBIAN_FRONTEND=noninteractive
 
 # ─── Update system ────────────────────────────
-proses "Memperbarui Paket Sistem..."
+proses "Memperbarui Paket Sistem"
+titik "Memperbarui Paket Sistem"
 apt-get update -qq >> "$LOG_FILE" 2>&1
 apt-get upgrade -y -qq >> "$LOG_FILE" 2>&1
 sukses "Paket Sistem Berhasil Diperbarui"
 # ─── Essential packages ───────────────────────
-proses "Menginstall Paket Yang Diperlukan.."
+proses "Menginstall Paket Yang Diperlukan"
+titik "Menginstall Paket Yang Diperlukan"
 PACKAGES=(
     curl wget git unzip zip software-properties-common
     build-essential gcc g++ make
@@ -31,7 +33,8 @@ if command -v node &>/dev/null; then
     NODE_VER=$(node --version)
     sukses "Sistem Core sudah Terinstall"
 else
-    proses "Menginstall Core Sistem..."
+    proses "Menginstall Core Sistem"
+	titik "Menginstall Core Sistem"
     curl -fsSL https://deb.nodesource.com/setup_22.x | bash - >> "$LOG_FILE" 2>&1
     apt-get install -y -qq nodejs >> "$LOG_FILE" 2>&1
     sukses "Core Sistem sudah Terinstall"

@@ -22,17 +22,15 @@ KUNING='\033[33m'
 declare -a STATUS
 
 proses() {
-   local text="$1"
-    local spin='|/-\'
-
-    while true; do
-        for ((i=0; i<${#spin}; i++)); do
-            printf "\r\033[K${KUNING} [%c] %s${NC}" "${spin:$i:1}" "$text"
-            sleep 0.1
-        done
+    printf  "\r\033[K${KUNING} [>] $1...${NC}"
+    echo "[>] $1..." >> "$LOG_FILE"
+}
+titik() {
+    for d in "." ".." "..."; do
+        printf "\r\033[K${KUNING}[>] %s%s${NC}" "$1" "$d"
+        sleep 0.2
     done
 }
-
 sukses() {
     printf  "\r\033[K${GREEN} [✓]%s${NC}\n" "$1"
 
