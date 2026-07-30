@@ -1,0 +1,316 @@
+             <section class="breadcrumb__before p-relative">
+                <div class="breadcrumb__area overflow-hidden position-relative" data-background="assets/imgs/shapes/breadcrumb-shape.png">
+                    <div class="breadcrumb__shapes">
+                        <div class="breadcrumb__shapes-shape-1"></div>
+                        <div class="breadcrumb__shapes-shape-2"></div>
+                        <div class="breadcrumb__shapes-shape-3"></div>
+                        <div class="breadcrumb__shapes-shape-4"></div>
+                        <div class="breadcrumb__shapes-shape-5 upDown">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-1.png" alt="img not found">
+                        </div>
+                        <div class="breadcrumb__shapes-shape-6 line-to-bottom-360">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-2.png" alt="img not found">
+                        </div>
+                        <div class="breadcrumb__shapes-shape-7 line-to-bottom-360-l">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-3.png" alt="img not found">
+                        </div>
+                        <div class="breadcrumb__shapes-shape-8 leftRight">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-4.png" alt="img not found">
+                        </div>
+                        <div class="breadcrumb__shapes-shape-9">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-5.png" alt="img not found">
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="row align-items-center justify-content-between">
+                            <div class="col-12">
+                                <div class="breadcrumb__content">
+                                    <div class="breadcrumb__title-wrapper">
+                                        <h1 class="breadcrumb__title"><%= title %></h1>
+                                    </div>
+                                    <div class="breadcrumb__menu">
+                                        <nav>
+                                            <ul>
+                                                <li><span><a href="/dashboard"> <img src="assets/imgs/icon/home-icon.png" alt="img not found">Home</a></span></li>
+                                                <li class="active"><span> <%= title %></span></li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             </section>
+<section class="about__area section-space-top section-space-bottom-1">
+                <div class="container">
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header"><strong><i class="ri-settings-3-line"></i> Mail Server Configuration</strong></div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Server Hostname</label>
+                    <input type="text" class="form-control" id="mailHostname" value="<%= settings.mail_hostname || '' %>" placeholder="mail.yourdomain.com">
+                    <small class="text-muted">Hostname FQDN server Anda (contoh: mail.mrtronik.co.id)</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Server IP Address</label>
+                    <input type="text" class="form-control" id="serverIp" value="<%= settings.mail_server_ip || '' %>" placeholder="103.191.63.147">
+                    <small class="text-muted">IP publik VPS yang digunakan untuk mail server</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Cloudflare Email (optional)</label>
+                    <input type="email" class="form-control" id="cfEmail" value="<%= settings.mail_cloudflare_email || '' %>" placeholder="you@example.com">
+                    <small class="text-muted">Email akun Cloudflare (untuk referensi)</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">System Notification Email</label>
+                    <input type="email" class="form-control" id="systemEmail" value="<%= settings.system_email || '' %>" placeholder="noreply@yourdomain.com">
+                    <small class="text-muted">Email "from" untuk notifikasi sistem (install berhasil, dll)</small>
+                </div>
+
+                <hr>
+                <h6><i class="ri-mail-send-line"></i> SMTP Relay (untuk kirim email keluar)</h6>
+                <small class="text-muted d-block mb-3">Kalau VPS block port 25 outbound, isi ini pakai Mailgun/SendGrid/Gmail SMTP. Kosongkan = langsung via port 25.</small>
+                <div class="mb-3">
+                    <label class="form-label">Relay Host</label>
+                    <input type="text" class="form-control" id="relayHost" value="<%= settings.smtp_relay_host || '' %>" placeholder="smtp.mailgun.org">
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Relay Port</label>
+                        <input type="number" class="form-control" id="relayPort" value="<%= settings.smtp_relay_port || '' %>" placeholder="587">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Relay SSL</label>
+                        <select class="form-select" id="relaySecure">
+                            <option value="true" <%= settings.smtp_relay_secure === 'true' ? 'selected' : '' %>>STARTTLS</option>
+                            <option value="false" <%= settings.smtp_relay_secure !== 'true' ? 'selected' : '' %>>None</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Relay Username</label>
+                    <input type="text" class="form-control" id="relayUser" value="<%= settings.smtp_relay_user || '' %>" placeholder="postmaster@yourdomain.com">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Relay Password</label>
+                    <input type="password" class="form-control" id="relayPass" value="<%= settings.smtp_relay_pass || '' %>" placeholder="Your relay password">
+                </div>
+
+                <button class="btn btn-primary" onclick="saveMailSettings()"><i class="ri-save-line"></i> Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header"><strong><i class="ri-information-line"></i> Server Status</strong></div>
+            <div class="card-body">
+                <table class="table table-sm mb-0">
+                    <tr><td>Postfix (SMTP)</td><td><span class="badge bg-success">Port 25</span></td></tr>
+                    <tr><td>Dovecot (IMAP)</td><td><span class="badge bg-success">Port 993 (SSL)</span></td></tr>
+                    <tr><td>Dovecot (POP3)</td><td><span class="badge bg-success">Port 995 (SSL)</span></td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DNS Setup Guide -->
+<div class="card mb-4">
+    <div class="card-header"><strong><i class="ri-book-open-line"></i> DNS Setup Guide - Cara Setting DNS di Cloudflare</strong></div>
+    <div class="card-body">
+        <div class="alert alert-info">
+            <i class="ri-lightbulb-line"></i> <strong>Penting!</strong> Agar email bisa masuk dan keluar dengan benar, Anda harus setting DNS record di domain provider (Cloudflare).
+        </div>
+
+        <h5 class="mt-4"><i class="ri-add-circle-line text-primary"></i> 1. MX Record (Mail Exchange)</h5>
+        <p>MX Record memberitahu server mana yang menangani email untuk domain Anda.</p>
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                <table class="table table-sm table-bordered mb-0">
+                    <thead class="table-dark">
+                        <tr><th>Type</th><th>Name</th><th>Mail Server</th><th>TTL</th><th>Priority</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="badge bg-primary">MX</span></td><td><code>@</code></td><td id="mxValue"><%= settings.mail_hostname || 'mail.yourdomain.com' %></td><td>Auto</td><td><strong>10</strong></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="alert alert-warning">
+            <strong>Cara tambah di Cloudflare:</strong><br>
+            1. Login ke <a href="https://dash.cloudflare.com" target="_blank">Cloudflare Dashboard</a><br>
+            2. Pilih domain Anda<br>
+            3. Tab <strong>DNS</strong> &rarr; <strong>Add Record</strong><br>
+            4. Type: <code>MX</code>, Name: <code>@</code>, Mail Server: <code id="mxNote"><%= settings.mail_hostname || 'mail.yourdomain.com' %></code>, Priority: <code>10</code><br>
+            5. <strong>Proxy status: DNS only (橙色 globe harus mati/abu-abu)</strong> - Jangan aktifkan proxy untuk MX record!
+        </div>
+
+        <h5 class="mt-4"><i class="ri-add-circle-line text-success"></i> 2. A Record (mail subdomain)</h5>
+        <p>A Record mengarahkan subdomain <code>mail</code> ke IP server Anda.</p>
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                <table class="table table-sm table-bordered mb-0">
+                    <thead class="table-dark">
+                        <tr><th>Type</th><th>Name</th><th>IPv4 Address</th><th>TTL</th><th>Proxy</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="badge bg-success">A</span></td><td><code>mail</code></td><td id="aRecordIp"><%= settings.mail_server_ip || 'YOUR_SERVER_IP' %></td><td>Auto</td><td><span class="badge bg-secondary">DNS only</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="alert alert-warning">
+            <strong>Cara tambah di Cloudflare:</strong><br>
+            1. Tab <strong>DNS</strong> &rarr; <strong>Add Record</strong><br>
+            2. Type: <code>A</code>, Name: <code>mail</code>, IPv4: <code id="aNote"><%= settings.mail_server_ip || 'YOUR_SERVER_IP' %></code><br>
+            3. <strong>Proxy: DNS only (mati/abu-abu)</strong> - Jangan aktifkan proxy!
+        </div>
+
+        <h5 class="mt-4"><i class="ri-add-circle-line text-warning"></i> 3. SPF Record (TXT)</h5>
+        <p>SPF mencegah email Anda masuk ke spam. SPF memvalidasi IP yang boleh mengirim email untuk domain Anda.</p>
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                <table class="table table-sm table-bordered mb-0">
+                    <thead class="table-dark">
+                        <tr><th>Type</th><th>Name</th><th>Content</th><th>TTL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="badge bg-info">TXT</span></td><td><code>@</code></td><td><code>v=spf1 ip4:<span id="spfIp"><%= settings.mail_server_ip || 'YOUR_SERVER_IP' %></span> a mx ~all</code></td><td>Auto</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="alert alert-warning">
+            <strong>Cara tambah di Cloudflare:</strong><br>
+            1. Tab <strong>DNS</strong> &rarr; <strong>Add Record</strong><br>
+            2. Type: <code>TXT</code>, Name: <code>@</code><br>
+            3. Content: <code>v=spf1 ip4:<%= settings.mail_server_ip || 'YOUR_SERVER_IP' %> a mx ~all</code><br>
+            4. <strong>Proxy: DNS only</strong>
+        </div>
+
+        <h5 class="mt-4"><i class="ri-add-circle-line text-danger"></i> 4. rDNS / PTR Record (Reverse DNS)</h5>
+        <p>PTR Record digunakan untuk reverse lookup IP &rarr; domain. Penting untuk reputasi email.</p>
+        <div class="alert alert-danger">
+            <strong>PTR Record harus di-setting di provider VPS</strong> (bukan di Cloudflare!).<br><br>
+            <strong>Cara setting:</strong><br>
+            1. Login ke panel VPS provider (contoh: Vultr, DigitalOcean, Hetzner, dsb)<br>
+            2. Cari menu <strong>Reverse DNS</strong> atau <strong>rDNS</strong> atau <strong>PTR Record</strong><br>
+            3. Set IP Anda (<code><%= settings.mail_server_ip || 'YOUR_SERVER_IP' %></code>) &rarr;指向 hostname: <code><%= settings.mail_hostname || 'mail.yourdomain.com' %></code><br><br>
+            <strong>Cek PTR yang sudah ada:</strong><br>
+            <code>dig -x <%= settings.mail_server_ip || 'YOUR_SERVER_IP' %></code> atau <code>nslookup <%= settings.mail_server_ip || 'YOUR_SERVER_IP' %></code>
+        </div>
+
+        <h5 class="mt-4"><i class="ri-add-circle-line text-info"></i> 5. DKIM Record (optional tapi recommended)</h5>
+        <p>DKIM menambah keamanan dan reputasi email Anda.</p>
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                <p class="mb-2">DKIM perlu di-generate di VPS terlebih dahulu:</p>
+                <code>sudo apt install opendkim opendkim-tools<br>
+sudo opendkim-genkey -s default -d yourdomain.com<br>
+sudo chown opendkim:opendkim /etc/opendkim/keys/default.private</code>
+            </div>
+        </div>
+
+        <h5 class="mt-4"><i class="ri-add-circle-line text-secondary"></i> 6. DMARC Record (optional)</h5>
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                <table class="table table-sm table-bordered mb-0">
+                    <thead class="table-dark">
+                        <tr><th>Type</th><th>Name</th><th>Content</th><th>TTL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="badge bg-info">TXT</span></td><td><code>_dmarc</code></td><td><code>v=DMARC1; p=quarantine; rua=mailto:admin@yourdomain.com</code></td><td>Auto</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <hr>
+        <h5><i class="ri-checkbox-circle-line text-success"></i> Checklist Sebelum Kirim Email</h5>
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="chk1">
+            <label class="form-check-label" for="chk1">MX Record pointing ke mail server</label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="chk2">
+            <label class="form-check-label" for="chk2">A Record <code>mail</code> pointing ke IP server</label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="chk3">
+            <label class="form-check-label" for="chk3">SPF Record (TXT) sudah ditambah</label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="chk4">
+            <label class="form-check-label" for="chk4">PTR Record sudah di-setting di VPS provider</label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="chk5">
+            <label class="form-check-label" for="chk5">Cloudflare Proxy <strong>mati/DNS only</strong> untuk semua record mail</label>
+        </div>
+
+        <hr>
+        <h5><i class="ri-test-tube-line text-primary"></i> Testing</h5>
+        <p>Setelah semua DNS terpasang, test dengan command:</p>
+        <div class="card bg-dark text-light mb-3">
+            <div class="card-body">
+                <code class="text-light">
+# Cek MX record<br>
+dig MX yourdomain.com<br><br>
+# Cek SPF<br>
+dig TXT yourdomain.com<br><br>
+# Cek reverse DNS (PTR)<br>
+dig -x YOUR_SERVER_IP<br><br>
+# Test kirim email dari VPS<br>
+echo "test" | mail -s "test" emailtujuan@gmail.com
+                </code>
+            </div>
+        </div>
+
+        <div class="alert alert-success">
+            <strong>Tip:</strong> Setelah menambah/ubah DNS record, tunggu <strong>5-30 menit</strong> untuk propagasi. Gunakan <a href="https://www.whatsmydns.net" target="_blank">whatsmydns.net</a> untuk cek propagasi DNS.
+        </div>
+    </div>
+</div>
+
+    </div>
+</section>
+
+<script>
+function saveMailSettings() {
+    const hostname = document.getElementById('mailHostname').value.trim();
+    const server_ip = document.getElementById('serverIp').value.trim();
+    const cloudflare_email = document.getElementById('cfEmail').value.trim();
+    const system_email = document.getElementById('systemEmail').value.trim();
+    const smtp_relay_host = document.getElementById('relayHost').value.trim();
+    const smtp_relay_port = document.getElementById('relayPort').value.trim();
+    const smtp_relay_secure = document.getElementById('relaySecure').value;
+    const smtp_relay_user = document.getElementById('relayUser').value.trim();
+    const smtp_relay_pass = document.getElementById('relayPass').value;
+
+    if (!hostname || !server_ip) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Hostname dan Server IP wajib diisi' });
+        return;
+    }
+
+    fetch('/api/settings/mail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hostname, server_ip, cloudflare_email, system_email, smtp_relay_host, smtp_relay_port, smtp_relay_secure, smtp_relay_user, smtp_relay_pass })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: 'Settings Saved', timer: 1500, showConfirmButton: false })
+                .then(() => window.location.reload());
+        } else {
+            Swal.fire({ icon: 'error', title: 'Error', text: data.error });
+        }
+    })
+    .catch(err => Swal.fire({ icon: 'error', title: 'Error', text: err.message }));
+}
+</script>

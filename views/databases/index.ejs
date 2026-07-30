@@ -1,0 +1,284 @@
+<div class="content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box justify-content-between d-flex align-items-lg-center flex-lg-row flex-column">
+                    <h4 class="page-title"><i class="ri-database-2-line me-2"></i>Database Manager</h4>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-primary" onclick="showCreateDbModal()">
+                            <i class="ri-add-line me-1"></i>New Database
+                        </button>
+                        <button class="btn btn-sm btn-success" onclick="showCreateUserModal()">
+                            <i class="ri-user-add-line me-1"></i>New User
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header"><i class="ri-database-2-line me-1"></i> Databases</div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover table-centered mb-0">
+                            <thead class="bg-light-subtle">
+                                <tr><th>Name</th><th style="width:120px;">Tables</th><th style="width:100px;">Actions</th></tr>
+                            </thead>
+                            <tbody id="db-list">
+                                <% databases.forEach(function(db) { %>
+                                <tr>
+                                    <td class="fw-semibold"><%= db %></td>
+                                    <td><button class="btn btn-sm btn-outline-primary" onclick="showTables('<%= db %>')"><i class="ri-table-line"></i> View</button></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-light text-danger" onclick="deleteDb('<%= db %>')" title="Delete"><i class="ri-delete-bin-line"></i></button>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                                <% if (databases.length === 0) { %>
+                                <tr><td colspan="3" class="text-center text-muted py-3">No databases</td></tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header"><i class="ri-user-line me-1"></i> Database Users</div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover table-centered mb-0">
+                            <thead class="bg-light-subtle">
+                                <tr><th>User</th><th>Host</th><th style="width:100px;">Actions</th></tr>
+                            </thead>
+                            <tbody id="user-list">
+                                <% users.forEach(function(u) { %>
+                                <tr>
+                                    <td class="fw-semibold"><%= u.user %></td>
+                                    <td><code><%= u.host %></code></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-light text-info" onclick="showGrantModal('<%= u.user %>', '<%= u.host %>')" title="Grant"><i class="ri-shield-key-line"></i></button>
+                                        <button class="btn btn-sm btn-light text-danger" onclick="deleteUser('<%= u.user %>', '<%= u.host %>')" title="Delete"><i class="ri-delete-bin-line"></i></button>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                                <% if (users.length === 0) { %>
+                                <tr><td colspan="3" class="text-center text-muted py-3">No users</td></tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="tables-section" style="display:none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="header-title mb-0" id="tables-title">Tables</h4>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('tables-section').style.display='none'"><i class="ri-close-line"></i></button>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover table-centered mb-0" id="tables-table">
+                            <thead class="bg-light-subtle">
+                                <tr><th>Table</th><th>Rows</th><th style="width:100px;">Actions</th></tr>
+                            </thead>
+                            <tbody id="tables-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="createDbModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">New Database</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <label class="form-label">Database Name</label>
+                <input type="text" class="form-control" id="newDbName" placeholder="my_database">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="doCreateDb()">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">New Database User</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" id="newUser" placeholder="dbuser">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" id="newPass" placeholder="Password">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Host <small class="text-muted">(default: %)</small></label>
+                    <input type="text" class="form-control" id="newHost" placeholder="%" value="%">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="doCreateUser()">Create User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="grantModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Grant Privileges</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">User</label>
+                    <input type="text" class="form-control" id="grantUser" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Database</label>
+                    <select class="form-select" id="grantDb">
+                        <% databases.forEach(function(db) { %>
+                        <option value="<%= db %>"><%= db %></option>
+                        <% }); %>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-info text-white" onclick="doGrant()">Grant ALL</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showCreateDbModal() {
+    document.getElementById('newDbName').value = '';
+    new bootstrap.Modal(document.getElementById('createDbModal')).show();
+}
+
+function doCreateDb() {
+    var name = document.getElementById('newDbName').value.trim();
+    if (!name) return Swal.fire('Warning', 'Name required', 'warning');
+    fetch('/api/database/create-db', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+        body: JSON.stringify({ name: name })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.error) { Swal.fire('Error', data.error, 'error'); return; }
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Database created!', showConfirmButton: false, timer: 2000 });
+        bootstrap.Modal.getInstance(document.getElementById('createDbModal')).hide();
+        setTimeout(function() { location.reload(); }, 500);
+    });
+}
+
+function deleteDb(name) {
+    Swal.fire({ title: 'Delete Database?', text: 'Delete "' + name + '" and all its data? This cannot be undone.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Yes, delete' }).then(function(result) {
+        if (!result.isConfirmed) return;
+        fetch('/api/database/delete-db', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ name: name })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.error) { Swal.fire('Error', data.error, 'error'); return; }
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Deleted!', showConfirmButton: false, timer: 2000 });
+            setTimeout(function() { location.reload(); }, 500);
+        });
+    });
+}
+
+function showCreateUserModal() {
+    document.getElementById('newUser').value = '';
+    document.getElementById('newPass').value = '';
+    document.getElementById('newHost').value = '%';
+    new bootstrap.Modal(document.getElementById('createUserModal')).show();
+}
+
+function doCreateUser() {
+    var username = document.getElementById('newUser').value.trim();
+    var password = document.getElementById('newPass').value;
+    var host = document.getElementById('newHost').value.trim();
+    if (!username || !password) return Swal.fire('Warning', 'Username and password required', 'warning');
+    fetch('/api/database/create-user', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+        body: JSON.stringify({ username: username, password: password, host: host })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.error) { Swal.fire('Error', data.error, 'error'); return; }
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'User created!', showConfirmButton: false, timer: 2000 });
+        bootstrap.Modal.getInstance(document.getElementById('createUserModal')).hide();
+        setTimeout(function() { location.reload(); }, 500);
+    });
+}
+
+function deleteUser(username, host) {
+    Swal.fire({ title: 'Delete User?', text: 'Delete user "' + username + '@' + host + '"?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Yes, delete' }).then(function(result) {
+        if (!result.isConfirmed) return;
+        fetch('/api/database/delete-user', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+            body: JSON.stringify({ username: username, host: host })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.error) { Swal.fire('Error', data.error, 'error'); return; }
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Deleted!', showConfirmButton: false, timer: 2000 });
+            setTimeout(function() { location.reload(); }, 500);
+        });
+    });
+}
+
+function showGrantModal(username, host) {
+    document.getElementById('grantUser').value = username + '@' + host;
+    new bootstrap.Modal(document.getElementById('grantModal')).show();
+}
+
+function doGrant() {
+    var userParts = document.getElementById('grantUser').value.split('@');
+    var database = document.getElementById('grantDb').value;
+    fetch('/api/database/grant', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+        body: JSON.stringify({ username: userParts[0], database: database, host: userParts[1] })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.error) { Swal.fire('Error', data.error, 'error'); return; }
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Privileges granted!', showConfirmButton: false, timer: 2000 });
+        bootstrap.Modal.getInstance(document.getElementById('grantModal')).hide();
+    });
+}
+
+function showTables(db) {
+    fetch('/api/database/tables?database=' + encodeURIComponent(db), { credentials: 'include' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.error) { Swal.fire('Error', data.error, 'error'); return; }
+        document.getElementById('tables-title').textContent = db + ' - Tables';
+        var html = '';
+        if (data.tables.length === 0) {
+            html = '<tr><td colspan="3" class="text-center text-muted py-3">No tables</td></tr>';
+        } else {
+            data.tables.forEach(function(t) {
+                html += '<tr><td class="fw-semibold">' + t + '</td><td>-</td><td></td></tr>';
+            });
+        }
+        document.getElementById('tables-body').innerHTML = html;
+        document.getElementById('tables-section').style.display = '';
+    });
+}
+</script>

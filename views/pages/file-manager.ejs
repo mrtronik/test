@@ -1,0 +1,439 @@
+<div class="content" style="padding: 0;">
+    <div class="container-fluid" style="padding: 16px;">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="page-title mb-0"><i class="ri-folder-4-fill me-2"></i>File Manager</h4>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-info text-white" onclick="showUploadModal()">
+                    <i class="ri-upload-2-line me-1"></i>Upload
+                </button>
+                <button class="btn btn-sm btn-success" onclick="showCreateModal('folder')">
+                    <i class="ri-folder-add-line me-1"></i>New Folder
+                </button>
+                <button class="btn btn-sm btn-primary" onclick="showCreateModal('file')">
+                    <i class="ri-file-add-line me-1"></i>New File
+                </button>
+            </div>
+        </div>
+
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb" id="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" onclick="navigateTo('/')"><i class="ri-home-4-line"></i></a></li>
+            </ol>
+        </nav>
+
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-centered mb-0">
+                        <thead class="bg-light-subtle">
+                            <tr>
+                                <th style="width: 40px;"></th>
+                                <th>Name</th>
+                                <th style="width: 120px;">Size</th>
+                                <th style="width: 160px;">Modified</th>
+                                <th style="width: 100px;">Permissions</th>
+                                <th style="width: 100px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="file-list">
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                    <p class="text-muted mt-2 mb-0">Loading files...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalTitle">Create</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" id="createName" placeholder="Enter name...">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="doCreate()">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalTitle">Edit File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Path: <span id="editFilePath" class="text-muted"></span></label>
+                <textarea class="form-control font-monospace" id="editContent" rows="20" style="font-size: 13px;"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="doSaveFile()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="renameModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rename</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">New Name</label>
+                <input type="text" class="form-control" id="renameName">
+                <input type="hidden" id="renameOldPath">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="doRename()">Rename</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Destination: <span id="uploadDir" class="text-muted"></span></label>
+                <input type="file" class="form-control" id="uploadFile" multiple>
+                <div id="uploadProgress" class="mt-3" style="display:none;">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:0%">0%</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btnUpload" onclick="doUpload()">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var currentPath = '/';
+var createType = 'folder';
+
+function navigateTo(p) {
+    currentPath = p;
+    loadFiles(p);
+}
+
+function loadFiles(p) {
+    fetch('/api/file-manager/list?path=' + encodeURIComponent(p), { credentials: 'include' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.error) {
+                Swal.fire('Error', data.error, 'error');
+                return;
+            }
+            currentPath = data.currentDir;
+            renderBreadcrumb(data.currentDir);
+            renderFiles(data.items, data.parentDir);
+        })
+        .catch(function(e) {
+            document.getElementById('file-list').innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4">Error loading files</td></tr>';
+        });
+}
+
+function renderBreadcrumb(dir) {
+    if (dir === '/') {
+        document.getElementById('breadcrumb').innerHTML = '<li class="breadcrumb-item active"><i class="ri-home-4-line"></i> Root</li>';
+        return;
+    }
+    var parts = dir.split('/').filter(Boolean);
+    var html = '<li class="breadcrumb-item"><a href="#" onclick="navigateTo(\'/\')"><i class="ri-home-4-line"></i></a></li>';
+    var path = '';
+    parts.forEach(function(part) {
+        path += '/' + part;
+        var p = path;
+        html += '<li class="breadcrumb-item"><a href="#" onclick="navigateTo(\'' + p.replace(/'/g, "\\'") + '\')">' + part + '</a></li>';
+    });
+    document.getElementById('breadcrumb').innerHTML = html;
+}
+
+function renderFiles(items, parentDir) {
+    if (items.length === 0) {
+        document.getElementById('file-list').innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Empty directory</td></tr>';
+        return;
+    }
+
+    var html = '';
+    items.forEach(function(item) {
+        var icon = getFileIcon(item.name, item.isDirectory);
+        var size = item.isDirectory ? '-' : formatSize(item.size);
+        var modified = item.modified ? new Date(item.modified).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+        var perms = item.permissions || '---------';
+
+        html += '<tr style="cursor: ' + (item.isDirectory ? 'pointer' : 'default') + ';">';
+        html += '<td><i class="' + icon + ' fs-20"></i></td>';
+        html += '<td>';
+        if (item.isDirectory) {
+            html += '<a href="#" class="text-dark fw-semibold" onclick="navigateTo(\'' + item.path.replace(/'/g, "\\'") + '\')">' + escapeHtml(item.name) + '</a>';
+        } else {
+            html += '<span class="fw-semibold">' + escapeHtml(item.name) + '</span>';
+        }
+        html += '</td>';
+        html += '<td class="text-muted">' + size + '</td>';
+        html += '<td class="text-muted">' + modified + '</td>';
+        html += '<td><code class="fs-12">' + perms + '</code></td>';
+        html += '<td><div class="btn-group btn-group-sm">';
+        if (item.isEditable) {
+            html += '<button class="btn btn-light" onclick="editFile(\'' + item.path.replace(/'/g, "\\'") + '\')" title="Edit"><i class="ri-edit-line"></i></button>';
+        }
+        if (item.isArchive) {
+            html += '<button class="btn btn-light text-success" onclick="extractItem(\'' + item.path.replace(/'/g, "\\'") + '\')" title="Extract"><i class="ri-file-zip-line"></i></button>';
+        }
+        html += '<button class="btn btn-light" onclick="showRename(\'' + item.path.replace(/'/g, "\\'") + '\', \'' + escapeHtml(item.name).replace(/'/g, "\\'") + '\')" title="Rename"><i class="ri-pencil-line"></i></button>';
+        html += '<button class="btn btn-light text-danger" onclick="deleteItem(\'' + item.path.replace(/'/g, "\\'") + '\', \'' + escapeHtml(item.name).replace(/'/g, "\\'") + '\')" title="Delete"><i class="ri-delete-bin-line"></i></button>';
+        html += '</div></td></tr>';
+    });
+    document.getElementById('file-list').innerHTML = html;
+}
+
+function getFileIcon(name, isDir) {
+    if (isDir) return 'ri-folder-2-fill text-warning';
+    var ext = name.split('.').pop().toLowerCase();
+    var icons = {
+        'js': 'ri-file-code-fill text-warning',
+        'html': 'ri-html5-fill text-danger',
+        'css': 'ri-css3-fill text-info',
+        'json': 'ri-braces-fill text-warning',
+        'php': 'ri-file-code-fill text-primary',
+        'py': 'ri-file-code-fill text-success',
+        'md': 'ri-markdown-fill text-muted',
+        'txt': 'ri-file-text-fill text-muted',
+        'jpg': 'ri-image-fill text-success',
+        'jpeg': 'ri-image-fill text-success',
+        'png': 'ri-image-fill text-info',
+        'gif': 'ri-image-fill text-primary',
+        'pdf': 'ri-file-pdf-fill text-danger',
+        'zip': 'ri-file-zip-fill text-warning',
+        'sql': 'ri-database-2-fill text-info',
+        'sh': 'ri-terminal-fill text-success',
+        'conf': 'ri-settings-3-fill text-muted',
+        'log': 'ri-file-list-3-fill text-muted'
+    };
+    return icons[ext] || 'ri-file-fill text-muted';
+}
+
+function formatSize(bytes) {
+    if (!bytes || bytes === 0) return '0 B';
+    var k = 1024;
+    var sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    var i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function showCreateModal(type) {
+    createType = type;
+    document.getElementById('createModalTitle').textContent = type === 'folder' ? 'New Folder' : 'New File';
+    document.getElementById('createName').value = '';
+    new bootstrap.Modal(document.getElementById('createModal')).show();
+}
+
+function doCreate() {
+    var name = document.getElementById('createName').value.trim();
+    if (!name) return Swal.fire('Warning', 'Name required', 'warning');
+
+    var fullPath = currentPath === '/' ? '/' + name : currentPath + '/' + name;
+    var url = createType === 'folder' ? '/api/file-manager/mkdir' : '/api/file-manager/create-file';
+    
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ path: fullPath })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.error) { Swal.fire('Error', data.error, 'error'); return; }
+        bootstrap.Modal.getInstance(document.getElementById('createModal')).hide();
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Created!', showConfirmButton: false, timer: 2000 });
+        loadFiles(currentPath);
+    });
+}
+
+function editFile(p) {
+    fetch('/api/file-manager/read?path=' + encodeURIComponent(p), { credentials: 'include' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.error) { Swal.fire('Error', data.error, 'error'); return; }
+            document.getElementById('editFilePath').textContent = data.path;
+            document.getElementById('editContent').value = data.content;
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+        });
+}
+
+function doSaveFile() {
+    var p = document.getElementById('editFilePath').textContent;
+    var content = document.getElementById('editContent').value;
+
+    fetch('/api/file-manager/write', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ path: p, content: content })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.error) { Swal.fire('Error', data.error, 'error'); return; }
+        bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'File saved!', showConfirmButton: false, timer: 2000 });
+    });
+}
+
+function showRename(p, name) {
+    document.getElementById('renameOldPath').value = p;
+    document.getElementById('renameName').value = name;
+    new bootstrap.Modal(document.getElementById('renameModal')).show();
+}
+
+function doRename() {
+    var oldPath = document.getElementById('renameOldPath').value;
+    var newName = document.getElementById('renameName').value.trim();
+    if (!newName) return Swal.fire('Warning', 'Name required', 'warning');
+
+    var dir = oldPath.substring(0, oldPath.lastIndexOf('/'));
+    var newPath = dir + '/' + newName;
+
+    fetch('/api/file-manager/rename', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ oldPath: oldPath, newPath: newPath })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.error) { Swal.fire('Error', data.error, 'error'); return; }
+        bootstrap.Modal.getInstance(document.getElementById('renameModal')).hide();
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Renamed!', showConfirmButton: false, timer: 2000 });
+        loadFiles(currentPath);
+    });
+}
+
+function deleteItem(p, name) {
+    Swal.fire({ title: 'Delete?', text: 'Delete "' + name + '"? This cannot be undone.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Yes, delete' }).then(function(result) {
+        if (!result.isConfirmed) return;
+        fetch('/api/file-manager/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ path: p })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.error) { Swal.fire('Error', data.error, 'error'); return; }
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Deleted!', showConfirmButton: false, timer: 2000 });
+        loadFiles(currentPath);
+    });
+    });
+}
+
+function downloadFile(p) {
+    window.open('/api/file-manager/read?path=' + encodeURIComponent(p), '_blank');
+}
+
+function showUploadModal() {
+    document.getElementById('uploadDir').textContent = currentPath;
+    document.getElementById('uploadFile').value = '';
+    document.getElementById('uploadProgress').style.display = 'none';
+    document.getElementById('btnUpload').disabled = false;
+    new bootstrap.Modal(document.getElementById('uploadModal')).show();
+}
+
+function doUpload() {
+    var files = document.getElementById('uploadFile').files;
+    if (!files.length) return Swal.fire('Warning', 'Select at least one file', 'warning');
+
+    var progressBar = document.querySelector('#uploadProgress .progress-bar');
+    document.getElementById('uploadProgress').style.display = 'block';
+    document.getElementById('btnUpload').disabled = true;
+
+    var total = files.length;
+    var done = 0;
+
+    Array.from(files).forEach(function(file) {
+        var formData = new FormData();
+        formData.append('file', file);
+        formData.append('dir', currentPath);
+
+        fetch('/api/file-manager/upload', {
+            method: 'POST',
+            credentials: 'include',
+            body: formData
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.error) Swal.fire('Error', data.error, 'error');
+            done++;
+            var pct = Math.round((done / total) * 100);
+            progressBar.style.width = pct + '%';
+            progressBar.textContent = pct + '%';
+            if (done === total) {
+                setTimeout(function() {
+                    bootstrap.Modal.getInstance(document.getElementById('uploadModal')).hide();
+                    Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: total + ' file(s) uploaded!', showConfirmButton: false, timer: 2000 });
+                    loadFiles(currentPath);
+                }, 500);
+            }
+        })
+        .catch(function(e) {
+            Swal.fire('Error', 'Upload error: ' + e.message, 'error');
+            done++;
+        });
+    });
+}
+
+function extractItem(p) {
+    Swal.fire({ title: 'Extract?', text: 'Extract "' + p.split('/').pop() + '" here?', icon: 'question', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes, extract' }).then(function(result) {
+        if (!result.isConfirmed) return;
+        fetch('/api/file-manager/extract', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ path: p })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.error) { Swal.fire('Error', data.error, 'error'); return; }
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Extracted!', showConfirmButton: false, timer: 2000 });
+            loadFiles(currentPath);
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadFiles('/');
+});
+</script>

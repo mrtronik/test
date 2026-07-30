@@ -1,0 +1,319 @@
+ <%- include('../partials/page-header', {
+    title: 'System Information',
+    breadcrumb: [
+        { text: 'System Information', url: '/system-info' }
+    ],
+    buttons: [
+        {
+            text: 'Back',
+            url: '/dashboard',
+            icon: 'fas fa-arrow-left',
+            color: 'gray'
+        }
+    ]
+}) %>
+
+ <div class="grid md:grid-cols-12 lg:grid-cols-12 xl:grid-cols-12 gap-4 mb-4">
+            <div class="sm:col-span-12  md:col-span-12 lg:col-span-6 xl:col-span-6 ">
+                <div class="card h-full">
+                    <div class="card-header">
+                        <h4 class="card-title"><i class="fas fa-server me-2"></i> System Information</h4>
+                    </div><!--end card-header-->
+                    <div class="card-body">
+                        <div class="relative overflow-x-auto  sm:rounded">
+                            <table class="table-auto w-full">
+ 
+                                <tbody>
+                           
+									 <tr>
+									 <td class="text-dark py-2 px-3 bg-slate-50 dark:bg-slate-900/20 dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><strong>Hostname</strong></td>
+									 <td class="text-dark py-2 px-3 bg-slate-50 dark:bg-slate-900/20 dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><%= system.hostname %></td>
+									 </tr>
+                                <tr><td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><strong>Home Directory</strong></td>
+								<td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><%= system.homeDirectory %></td></tr>
+                                <tr><td class="text-dark py-2 px-3 bg-slate-50 dark:bg-slate-900/20 dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><strong>Uptime</strong></td>
+								<td class="text-dark py-2 px-3 bg-slate-50 dark:bg-slate-900/20 dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><%= system.uptime %></td></tr>
+                                <tr><td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><strong>Cores Count</strong></td>
+								<td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><%= system.coresCount %></td></tr>
+                                <tr><td class="text-dark py-2 px-3 bg-slate-50 dark:bg-slate-900/20 dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><strong>OS</strong></td>
+								<td class="text-dark py-2 px-3 bg-slate-50 dark:bg-slate-900/20 dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><%= system.osType %> <%= system.osRelease %></td></tr>
+                                <tr class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><td class="text-dark py-2 px-3 bg-slate-50 dark:bg-slate-900/20 dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><strong>Architecture</strong></td>
+								<td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><%= system.arch %></td></tr>
+                                </tbody>
+                             </table>
+                        </div>                            
+                    </div><!--end card-body-->
+                </div> <!--end card-->
+            </div><!--end col-->
+            <div class="sm:col-span-12  md:col-span-12 lg:col-span-6 xl:col-span-6 ">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title"><i class="fas fa-microchip me-1"></i> CPU</h4>
+                    </div><!--end card-header-->
+                    <div class="card-body">
+                        <!-- component -->
+                        <div class="relative overflow-x-auto  sm:rounded">
+                            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="justify-between">
+                                    <tr class="bg-gray-800 dark:bg-slate-700">
+                                        <th scope="col" class="px-5 py-3 text-slate-200">
+                                            Brand
+                                        </th>
+                                        <th scope="col" class="px-5 py-3 text-slate-200">
+                                            Models
+                                        </th>
+                                        <th scope="col" class="px-5 py-3 text-slate-200">
+                                           BogoMIPS	
+                                        </th>
+                                        <th scope="col" class="px-5 py-3 text-slate-200">
+                                            Speed
+                                        </th>
+                                 
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-gray-200">
+								      <tbody>
+                                <% cpu.forEach(function(c) { %>
+                                <tr>
+                                    <td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><%= c.brand %></td>
+                                    <td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><%= c.model %></td>
+                                    <td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><%= c.bogoMIPS %></td>
+                                    <td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><%= c.speed %></td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                                   
+                        
+                            </table>
+                        </div>
+                    </div><!--end card-body-->
+                </div> <!--end card-->
+            </div><!--end col--> 
+            <div class="sm:col-span-12  md:col-span-12 lg:col-span-6 xl:col-span-6 ">
+                <div class="card h-full">
+                    <div class="card-header">
+                        <h4 class="card-title"><i class="fas fa-memory me-1"></i> RAM Memory Information</h4>
+                    </div><!--end card-header-->
+                    <div class="card-body">
+                        <div class="relative overflow-x-auto  sm:rounded">
+                                
+                            <div id="ram-chart" style="min-height: 300px;"></div>
+                        </div>                            
+                    </div><!--end card-body-->
+                </div> <!--end card-->                
+            </div><!--end col-->
+          <div class="sm:col-span-12  md:col-span-12 lg:col-span-6 xl:col-span-6 ">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title"><i class="fas fa-memory me-1"></i> RAM Memory Information</h4>
+                    </div><!--end card-header-->
+                    <div class="card-body">
+                        <div class="relative overflow-x-auto  sm:rounded">
+                                
+                            <div id="ram-chart" style="min-height: 300px;"></div>
+                        </div>                            
+                    </div><!--end card-body-->
+                </div> <!--end card-->                
+            </div><!--end col-->   
+        <% diskUsage.forEach(function(d) { %>
+           <div class="sm:col-span-12  md:col-span-12 lg:col-span-6 xl:col-span-6 ">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-chart-pie me-1"></i> Disk Usage <%= d.mount %></div>
+                    <div class="card-body text-center">
+                        <div id="disk-chart-<%= d.mount.replace(/\//g, '-') %>" style="min-height: 280px;"></div>
+                    </div>
+                </div>
+            </div>
+            <% }); %>
+
+			<div class="sm:col-span-12  md:col-span-12 lg:col-span-6 xl:col-span-6 ">
+                <div class="card h-full">
+                    <div class="card-header">
+                        <h4 class="card-title"><i class="fas fa-cogs me-1"></i> Services</h4>
+                    </div><!--end card-header-->
+                    <div class="card-body">
+                        <div class="relative overflow-x-auto  sm:rounded">
+                            <table class="table-auto w-full">
+             <thead class="justify-between">
+                                    <tr class="bg-gray-800 dark:bg-slate-700">
+                                        <th scope="col" class="px-5 py-3 text-slate-200">
+                                            Service
+                                        </th>
+                                        <th scope="col" class="px-5 py-3 text-slate-200">
+                                            Version
+                                        </th>
+                                        <th scope="col" class="px-5 py-3 text-slate-200">
+                                          Status
+                                        </th>
+                                
+                                 
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        <% services.forEach(function(s) { %>
+                                <tr>
+                                    <td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><strong><%= s.name %></strong></td>
+                                    <td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><%= s.version %></td>
+                                    <td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900">
+                                        <% if (s.status === 'running') { %>
+                                        <span class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">Running</span>
+                                        <% } else { %>
+                                        <span class="bg-red-100 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900">Stopped</span>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                                <% }); %>
+							 </tbody>
+                             </table>
+                        </div>                            
+                    </div><!--end card-body-->
+                </div> <!--end card-->
+            </div><!--end col-->
+            <div class="sm:col-span-12  md:col-span-12 lg:col-span-6 xl:col-span-6 ">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title"><i class="fas fa-tachometer-alt me-1"></i> Load Average</h4>
+                    </div><!--end card-header-->
+                    <div class="card-body">
+                        <!-- component -->
+                        <div class="relative overflow-x-auto  sm:rounded">
+                            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="justify-between">
+ 
+                                </thead>
+                                <tbody class="bg-gray-200">
+								      <tbody>
+                                <tr>
+                                    <td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900">1 Minutes</td>
+									<td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><%= loadAverage.one %></td>
+ 
+                                </tr>
+                                <tr>
+								<td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900">5 Minutes</td>
+                                    <td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><%= loadAverage.five %></td>
+ 
+                                </tr>
+                                <tr>
+								<td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900">15 Minutes</td>
+                                    <td class="text-dark py-2 px-3   dark:text-slate-300 border-b border-l border-[#E8E8E8] dark:border-slate-900"><%= loadAverage.fifteen %></td>
+ 
+                                </tr>
+                            </tbody>
+                                   
+                        
+                            </table>
+                        </div>
+                    </div><!--end card-body-->
+                </div> <!--end card-->
+            </div><!--end col--> 
+        </div><!--end inner-grid-->
+       
+
+
+ 
+ <script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var diskUsage = <%- JSON.stringify(diskUsage) %>;
+    var memory = <%- JSON.stringify(memory) %>;
+
+    diskUsage.forEach(function(d) {
+        var chartId = 'disk-chart-' + d.mount.replace(/\//g, '-');
+        var el = document.getElementById(chartId);
+        if (!el) return;
+
+        var usedGB = (d.usedBytes / (1024*1024*1024)).toFixed(2);
+        var availGB = (d.availableBytes / (1024*1024*1024)).toFixed(2);
+        var reserved = (d.totalBytes - d.usedBytes - d.availableBytes) / (1024*1024*1024);
+        var totalGB = (d.totalBytes / (1024*1024*1024)).toFixed(2);
+
+        new ApexCharts(el, {
+            chart: { type: 'donut', height: 280 },
+            series: [parseFloat(usedGB), parseFloat(availGB), Math.max(0, parseFloat(reserved.toFixed(2)))],
+            labels: ['Used', 'Available', 'Reserved'],
+            colors: ['#ff6b6b', '#51cf66', '#339af0'],
+            legend: { position: 'bottom', fontSize: '12px' },
+            dataLabels: {
+                enabled: true,
+                formatter: function(val, opts) {
+                    return opts.w.config.labels[opts.seriesIndex] + ': ' + opts.w.config.series[opts.seriesIndex] + ' GB';
+                }
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        labels: {
+                            show: true,
+                            name: { show: true },
+                            value: { show: false }
+                        }
+                    }
+                }
+            }
+        }).render();
+    });
+
+    if (memory.ram.totalBytes > 0) {
+        var ramUsed = (memory.ram.usedBytes / (1024*1024*1024)).toFixed(2);
+        var ramFree = (memory.ram.freeBytes / (1024*1024*1024)).toFixed(2);
+        var ramCached = (memory.ram.cachedBytes / (1024*1024*1024)).toFixed(2);
+        var ramTotal = (memory.ram.totalBytes / (1024*1024*1024)).toFixed(2);
+
+        new ApexCharts(document.getElementById('ram-chart'), {
+            chart: { type: 'donut', height: 300 },
+            series: [parseFloat(ramUsed), parseFloat(ramFree), parseFloat(ramCached)],
+            labels: ['Used', 'Free', 'Cached'],
+            colors: ['#ff6b6b', '#51cf66', '#339af0'],
+            legend: { position: 'bottom', fontSize: '12px' },
+            dataLabels: {
+                enabled: true,
+                formatter: function(val, opts) {
+                    return opts.w.config.labels[opts.seriesIndex] + ': ' + opts.w.config.series[opts.seriesIndex] + ' GB';
+                }
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        labels: {
+                            show: true,
+                            name: { show: true, formatter: function() { return 'Total: ' + ramTotal + ' GB'; } },
+                            value: { show: false }
+                        }
+                    }
+                }
+            }
+        }).render();
+    }
+
+    if (memory.swap.totalBytes > 0) {
+        var swapUsed = (memory.swap.usedBytes / (1024*1024*1024)).toFixed(2);
+        var swapFree = (memory.swap.freeBytes / (1024*1024*1024)).toFixed(2);
+        var swapTotal = (memory.swap.totalBytes / (1024*1024*1024)).toFixed(2);
+
+        new ApexCharts(document.getElementById('swap-chart'), {
+            chart: { type: 'donut', height: 300 },
+            series: [parseFloat(swapUsed), parseFloat(swapFree)],
+            labels: ['Used', 'Free'],
+            colors: ['#ff6b6b', '#51cf66'],
+            legend: { position: 'bottom', fontSize: '12px' },
+            dataLabels: {
+                enabled: true,
+                formatter: function(val, opts) {
+                    return opts.w.config.labels[opts.seriesIndex] + ': ' + opts.w.config.series[opts.seriesIndex] + ' GB';
+                }
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        labels: {
+                            show: true,
+                            name: { show: true, formatter: function() { return 'Total: ' + swapTotal + ' GB'; } },
+                            value: { show: false }
+                        }
+                    }
+                }
+            }
+        }).render();
+    }
+});
+</script>

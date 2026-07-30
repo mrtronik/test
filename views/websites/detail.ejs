@@ -1,0 +1,168 @@
+<%- include('../partials/page-header', {
+    title: website.domain,
+    breadcrumb: [
+        { text: 'Website', url: '/websites' },
+        { text: website.domain }
+    ],
+    buttons: [
+        {
+            text: 'Back',
+            url: '/websites',
+            icon: 'fas fa-arrow-left',
+            color: 'gray'
+        },
+        {
+            text: 'Lihat Website',
+            url: 'http://' + website.domain,
+            icon: 'fas fa-external-link-alt',
+            color: 'green',
+            outline: true,
+            target: '_blank'
+        }
+    ]
+}) %>
+
+ <div class="content">
+                    <div class="container-fluid">
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="page-title-box justify-content-between d-flex align-items-lg-center flex-lg-row flex-column">
+                                    <h4 class="page-title"><i class="ri-global-line me-2"></i><%= website.domain %></h4>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="http://<%= website.domain %>" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="ri-external-link-line me-1"></i> Visit Site
+                                        </a>
+                                        <a href="/websites" class="btn btn-sm btn-light">
+                                            <i class="ri-arrow-left-line me-1"></i> Back
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <% if (website.status === 'active') { %>
+                                            <span class="badge bg-success fs-12 mb-3">Active</span>
+                                        <% } else { %>
+                                            <span class="badge bg-warning fs-12 mb-3">Suspended</span>
+                                        <% } %>
+                                        <h4 class="mb-1"><%= website.domain %></h4>
+                                        <p class="text-muted mb-3"><%= website.document_root %></p>
+
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <% if (website.status === 'active') { %>
+                                            <form action="/websites/<%= website.id %>/suspend" method="POST">
+                                                <button class="btn btn-warning btn-sm" onclick="event.preventDefault(); confirmDelete(this.closest('form'), 'Suspend this website?')">
+                                                    <i class="ri-pause-line me-1"></i> Suspend
+                                                </button>
+                                            </form>
+                                            <% } else { %>
+                                            <form action="/websites/<%= website.id %>/activate" method="POST">
+                                                <button class="btn btn-success btn-sm">
+                                                    <i class="ri-play-line me-1"></i> Activate
+                                                </button>
+                                            </form>
+                                            <% } %>
+                                            <form action="/websites/<%= website.id %>/delete" method="POST">
+                                                <button class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirmDelete(this.closest('form'), 'Delete this website permanently?')">
+                                                    <i class="ri-delete-bin-line me-1"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="header-title">Details</h4>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <table class="table table-borderless mb-0">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="ps-3 fw-semibold">Domain</td>
+                                                    <td class="pe-3"><%= website.domain %></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="ps-3 fw-semibold">Document Root</td>
+                                                    <td class="pe-3"><code><%= website.document_root %></code></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="ps-3 fw-semibold">PHP Version</td>
+                                                    <td class="pe-3"><span class="badge bg-info-subtle text-info"><%= website.php_version %></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="ps-3 fw-semibold">SSL</td>
+                                                    <td class="pe-3">
+                                                        <% if (website.ssl_status === 'active') { %>
+                                                            <span class="badge bg-success"><i class="ri-lock-fill me-1"></i>Active</span>
+                                                        <% } else { %>
+                                                            <span class="badge bg-secondary">Not configured</span>
+                                                        <% } %>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="ps-3 fw-semibold">Created</td>
+                                                    <td class="pe-3"><%= new Date(website.created_at).toLocaleDateString() %></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="header-title">Quick Actions</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <a href="/file-manager" class="btn btn-outline-primary w-100 py-3">
+                                                    <i class="ri-folder-line fs-3 d-block mb-1"></i>
+                                                    File Manager
+                                                </a>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <a href="/dns" class="btn btn-outline-primary w-100 py-3">
+                                                    <i class="ri-earth-line fs-3 d-block mb-1"></i>
+                                                    DNS Settings
+                                                </a>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <a href="/ssl" class="btn btn-outline-primary w-100 py-3">
+                                                    <i class="ri-lock-line fs-3 d-block mb-1"></i>
+                                                    SSL Certificate
+                                                </a>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <a href="/email-accounts" class="btn btn-outline-primary w-100 py-3">
+                                                    <i class="ri-mail-line fs-3 d-block mb-1"></i>
+                                                    Email Accounts
+                                                </a>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <a href="/php-settings" class="btn btn-outline-primary w-100 py-3">
+                                                    <i class="ri-code-s-slash-line fs-3 d-block mb-1"></i>
+                                                    PHP Settings
+                                                </a>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <a href="http://<%= website.domain %>" target="_blank" class="btn btn-outline-success w-100 py-3">
+                                                    <i class="ri-external-link-line fs-3 d-block mb-1"></i>
+                                                    Visit Website
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>

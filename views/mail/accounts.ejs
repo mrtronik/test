@@ -1,0 +1,483 @@
+   <%- include('../partials/page-header', {
+    title: 'Email Accounts',
+    breadcrumb: [
+        { text: 'Email Accounts', url: '/system-info' }
+    ],
+    buttons: [
+        {
+            text: 'Back',
+            url: '/dashboard',
+            icon: 'fas fa-arrow-left',
+            color: 'gray'
+        }
+    ]
+}) %>
+ <div class="grid md:grid-cols-12 lg:grid-cols-12 xl:grid-cols-12 gap-4 mb-4">
+            <div class="sm:col-span-12  md:col-span-12 lg:col-span-6 xl:col-span-6 ">
+                <div class="card h-full">
+                    <div class="card-header">
+                        <h4 class="card-title">Title</h4>
+                    </div><!--end card-header-->
+                    <div class="card-body">
+                        
+                    </div><!--end card-body-->
+                </div> <!--end card-->
+            </div><!--end col-->
+            <div class="sm:col-span-12  md:col-span-12 lg:col-span-6 xl:col-span-6 ">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Title</h4>
+                    </div><!--end card-header-->
+                    <div class="card-body">
+                        
+                    </div><!--end card-body-->
+                </div> <!--end card-->
+            </div><!--end col-->            
+        </div><!--end inner-grid-->
+ 
+<section class="about__area section-space-top section-space-bottom-1">
+                <div class="container">
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h4 class="mb-0">Email Accounts</h4>
+        <small class="text-muted">Manage email accounts for your domains</small>
+    </div>
+    <button class="btn btn-primary" onclick="showCreateModal()"><i class="ri-add-line"></i> Create Account</button>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <label class="form-label">Filter by Domain</label>
+                <select class="form-select" id="domainFilter" onchange="filterByDomain()">
+                    <option value="">All Domains</option>
+                    <% domains.forEach(function(d) { %>
+                        <option value="<%= d %>" <%= selectedDomain === d ? 'selected' : '' %>><%= d %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Total Accounts</label>
+                <div class="fs-4 fw-bold text-primary"><%= accounts.length %></div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Webmail</label>
+                <a href="/webmail" class="btn btn-outline-primary btn-sm" target="_blank"><i class="ri-external-link-line"></i> Open Webmail</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Quota / Usage</th>
+                        <th>Created</th>
+                        <th style="width: 220px">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (accounts && accounts.length > 0) { %>
+                        <% accounts.forEach(function(acc) { %>
+                            <tr>
+                                <td><strong><%= acc.email %></strong></td>
+                                <td>
+                                    <% if (acc.status === 'active') { %>
+                                        <span class="badge bg-success">Active</span>
+                                    <% } else if (acc.status === 'suspended') { %>
+                                        <span class="badge bg-warning">Suspended</span>
+                                    <% } else { %>
+                                        <span class="badge bg-danger">Deleted</span>
+                                    <% } %>
+                                </td>
+                                <td style="min-width:200px">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <small><%= acc.usedFormatted %> / <%= acc.quotaFormatted %></small>
+                                        <% if (acc.quota > 0) { %>
+                                            <small class="<%= parseFloat(acc.quotaPercent) > 90 ? 'text-danger fw-bold' : 'text-muted' %>"><%= acc.quotaPercent %>%</small>
+                                        <% } %>
+                                    </div>
+                                    <% if (acc.quota > 0) { %>
+                                        <div class="progress" style="height:6px">
+                                            <div class="progress-bar bg-<%= parseFloat(acc.quotaPercent) > 90 ? 'danger' : parseFloat(acc.quotaPercent) > 70 ? 'warning' : 'success' %>" style="width:<%= acc.quotaPercent %>%"></div>
+                                        </div>
+                                    <% } %>
+                                </td>
+                                <td><small class="text-muted"><%= acc.created_at ? new Date(acc.created_at).toLocaleDateString('id-ID') : '-' %></small></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="/webmail/login?email=<%= encodeURIComponent(acc.email) %>" class="btn btn-outline-success" title="Open Webmail" target="_blank">
+                                            <i class="ri-mail-open-line"></i>
+                                        </a>
+                                        <button class="btn btn-outline-info" title="Edit Quota" onclick="showQuotaModal('<%= acc.email %>', <%= acc.quota || 0 %>)">
+                                            <i class="ri-database-2-line"></i>
+                                        </button>
+                                        <button class="btn btn-outline-primary" title="Change Password" onclick="showPasswordModal('<%= acc.email %>')">
+                                            <i class="ri-lock-password-line"></i>
+                                        </button>
+                                        <button class="btn btn-outline-warning" title="Toggle Status" onclick="toggleAccount('<%= acc.email %>')">
+                                            <i class="ri-toggle-line"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" title="Delete" onclick="deleteAccount('<%= acc.email %>')">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <% if (selectedDomain) { %>
+                                    No email accounts found for domain "<%= selectedDomain %>"
+                                <% } else { %>
+                                    No email accounts found. Create your first email account!
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+    </div>
+</section>
+    <!-- Center Modal -->
+    <div class="modal fade" id="modalcenter">
+        <div class="modal-dialog modal-dialog-center">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="staticBackdropLabel5">Center Modal</h6>
+                    <button type="button" class="btn-close">&times;</button>
+                </div>
+                <div class="modal-body  text-muted leading-relaxed">
+                    <p class="font-medium">Overflowing text to show scroll behavior</p>
+                    <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac
+                        facilisis
+                        in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="focus:outline-none text-white bg-red-500 hover:bg-red-600  font-medium rounded text-sm px-3 py-2 mr-2 dark:bg-red-500 dark:hover:bg-red-600  close"
+                        data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="text-white bg-blue-500 hover:bg-blue-600  font-medium rounded text-sm px-3 py-2 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none  my-auto">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Create Account Modal -->
+<div class="modal fade" id="createAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="ri-mail-add-line"></i> Create Email Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createForm">
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="createUsername" placeholder="e.g. info" required>
+                            <span class="input-group-text">@</span>
+                            <select class="form-select" id="createDomain" required>
+                                <% domains.forEach(function(d) { %>
+                                    <option value="<%= d %>"><%= d %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="createPassword" required minlength="6">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="createPasswordConfirm" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quota (Mailbox Size Limit)</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="createQuota" value="0" min="0">
+                            <select class="form-select" id="createQuotaUnit" style="max-width:120px">
+                                <option value="0">Unlimited</option>
+                                <option value="1048576">1 MB</option>
+                                <option value="5242880">5 MB</option>
+                                <option value="10485760">10 MB</option>
+                                <option value="52428800">50 MB</option>
+                                <option value="104857600">100 MB</option>
+                                <option value="524288000">500 MB</option>
+                                <option value="1073741824">1 GB</option>
+                                <option value="5368709120">5 GB</option>
+                                <option value="10737418240">10 GB</option>
+                            </select>
+                        </div>
+                        <small class="text-muted">0 = Unlimited</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitCreate()"><i class="ri-add-line"></i> Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="passwordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="ri-lock-password-line"></i> Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="pwEmail">
+                <p class="text-muted">Changing password for: <strong id="pwEmailDisplay"></strong></p>
+                <div class="mb-3">
+                    <label class="form-label">New Password</label>
+                    <input type="password" class="form-control" id="newPassword" required minlength="6">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="newPasswordConfirm" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" onclick="submitPassword()"><i class="ri-check-line"></i> Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Quota Modal -->
+<div class="modal fade" id="quotaModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="ri-database-2-line"></i> Edit Quota</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="quotaEmail">
+                <p class="text-muted">Editing quota for: <strong id="quotaEmailDisplay"></strong></p>
+                <div class="mb-3">
+                    <label class="form-label">Quota (Mailbox Size Limit)</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="quotaValue" value="0" min="0">
+                        <select class="form-select" id="quotaUnit" style="max-width:120px">
+                            <option value="0">Unlimited</option>
+                            <option value="1048576">1 MB</option>
+                            <option value="5242880">5 MB</option>
+                            <option value="10485760">10 MB</option>
+                            <option value="52428800">50 MB</option>
+                            <option value="104857600">100 MB</option>
+                            <option value="524288000">500 MB</option>
+                            <option value="1073741824">1 GB</option>
+                            <option value="5368709120">5 GB</option>
+                            <option value="10737418240">10 GB</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitQuota()"><i class="ri-check-line"></i> Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+ <div class="modal-overlay"></div>
+ 
+<script>
+function filterByDomain() {
+    const domain = document.getElementById('domainFilter').value;
+    window.location.href = '/email-accounts' + (domain ? '?domain=' + encodeURIComponent(domain) : '');
+}
+
+function showCreateModal() {
+    if (document.getElementById('createDomain').options.length === 0) {
+        Swal.fire({ icon: 'warning', title: 'No Domains', text: 'No email domains found. Add a website first to create email accounts.' });
+        return;
+    }
+    document.getElementById('createUsername').value = '';
+    document.getElementById('createPassword').value = '';
+    document.getElementById('createPasswordConfirm').value = '';
+    document.getElementById('createQuota').value = '0';
+    document.getElementById('createQuotaUnit').value = '0';
+    new bootstrap.Modal(document.getElementById('modalcenter')).show();
+}
+
+function submitCreate() {
+    const username = document.getElementById('createUsername').value.trim();
+    const domain = document.getElementById('createDomain').value;
+    const password = document.getElementById('createPassword').value;
+    const confirm = document.getElementById('createPasswordConfirm').value;
+    const quotaUnit = document.getElementById('createQuotaUnit').value;
+
+    if (password !== confirm) {
+        Swal.fire({ icon: 'error', title: 'Password Mismatch', text: 'Passwords do not match' });
+        return;
+    }
+    if (password.length < 6) {
+        Swal.fire({ icon: 'error', title: 'Weak Password', text: 'Password must be at least 6 characters' });
+        return;
+    }
+
+    fetch('/api/email-accounts/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: username + '@' + domain, password, domain, quota: parseInt(quotaUnit) })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: 'Account Created', text: data.email, timer: 1500, showConfirmButton: false })
+                .then(() => window.location.reload());
+        } else {
+            Swal.fire({ icon: 'error', title: 'Error', text: data.error });
+        }
+    })
+    .catch(err => Swal.fire({ icon: 'error', title: 'Error', text: err.message }));
+}
+
+function showPasswordModal(email) {
+    document.getElementById('pwEmail').value = email;
+    document.getElementById('pwEmailDisplay').textContent = email;
+    document.getElementById('newPassword').value = '';
+    document.getElementById('newPasswordConfirm').value = '';
+    new bootstrap.Modal(document.getElementById('passwordModal')).show();
+}
+
+function submitPassword() {
+    const email = document.getElementById('pwEmail').value;
+    const password = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('newPasswordConfirm').value;
+
+    if (password !== confirm) {
+        Swal.fire({ icon: 'error', title: 'Password Mismatch', text: 'Passwords do not match' });
+        return;
+    }
+    if (password.length < 6) {
+        Swal.fire({ icon: 'error', title: 'Weak Password', text: 'Password must be at least 6 characters' });
+        return;
+    }
+
+    fetch('/api/email-accounts/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: 'Password Updated', timer: 1500, showConfirmButton: false })
+                .then(() => window.location.reload());
+        } else {
+            Swal.fire({ icon: 'error', title: 'Error', text: data.error });
+        }
+    })
+    .catch(err => Swal.fire({ icon: 'error', title: 'Error', text: err.message }));
+}
+
+function showQuotaModal(email, currentQuota) {
+    document.getElementById('quotaEmail').value = email;
+    document.getElementById('quotaEmailDisplay').textContent = email;
+    document.getElementById('quotaValue').value = currentQuota;
+    document.getElementById('quotaUnit').value = currentQuota;
+    new bootstrap.Modal(document.getElementById('quotaModal')).show();
+}
+
+function submitQuota() {
+    const email = document.getElementById('quotaEmail').value;
+    const quota = document.getElementById('quotaUnit').value;
+
+    fetch('/api/email-accounts/quota', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, quota: parseInt(quota) })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: 'Quota Updated', timer: 1500, showConfirmButton: false })
+                .then(() => window.location.reload());
+        } else {
+            Swal.fire({ icon: 'error', title: 'Error', text: data.error });
+        }
+    })
+    .catch(err => Swal.fire({ icon: 'error', title: 'Error', text: err.message }));
+}
+
+function toggleAccount(email) {
+    Swal.fire({
+        title: 'Toggle Account?',
+        text: 'This will enable/disable the email account.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, toggle'
+    }).then(result => {
+        if (result.isConfirmed) {
+            fetch('/api/email-accounts/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Status Updated', timer: 1500, showConfirmButton: false })
+                        .then(() => window.location.reload());
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Error', text: data.error });
+                }
+            })
+            .catch(err => Swal.fire({ icon: 'error', title: 'Error', text: err.message }));
+        }
+    });
+}
+
+function deleteAccount(email) {
+    Swal.fire({
+        title: 'Delete Account?',
+        text: 'This will permanently delete the email account: ' + email,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete'
+    }).then(result => {
+        if (result.isConfirmed) {
+            fetch('/api/email-accounts/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Account Deleted', timer: 1500, showConfirmButton: false })
+                        .then(() => window.location.reload());
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Error', text: data.error });
+                }
+            })
+            .catch(err => Swal.fire({ icon: 'error', title: 'Error', text: err.message }));
+        }
+    });
+}
+</script>

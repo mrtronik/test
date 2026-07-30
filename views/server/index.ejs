@@ -1,0 +1,298 @@
+             <section class="breadcrumb__before p-relative">
+                <div class="breadcrumb__area overflow-hidden position-relative" data-background="assets/imgs/shapes/breadcrumb-shape.png">
+                    <div class="breadcrumb__shapes">
+                        <div class="breadcrumb__shapes-shape-1"></div>
+                        <div class="breadcrumb__shapes-shape-2"></div>
+                        <div class="breadcrumb__shapes-shape-3"></div>
+                        <div class="breadcrumb__shapes-shape-4"></div>
+                        <div class="breadcrumb__shapes-shape-5 upDown">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-1.png" alt="img not found">
+                        </div>
+                        <div class="breadcrumb__shapes-shape-6 line-to-bottom-360">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-2.png" alt="img not found">
+                        </div>
+                        <div class="breadcrumb__shapes-shape-7 line-to-bottom-360-l">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-3.png" alt="img not found">
+                        </div>
+                        <div class="breadcrumb__shapes-shape-8 leftRight">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-4.png" alt="img not found">
+                        </div>
+                        <div class="breadcrumb__shapes-shape-9">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-5.png" alt="img not found">
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="row align-items-center justify-content-between">
+                            <div class="col-12">
+                                <div class="breadcrumb__content">
+                                    <div class="breadcrumb__title-wrapper">
+                                        <h1 class="breadcrumb__title"><%= title %></h1>
+                                    </div>
+                                    <div class="breadcrumb__menu">
+                                        <nav>
+                                            <ul>
+                                                <li><span><a href="/dashboard"> <img src="assets/imgs/icon/home-icon.png" alt="img not found">Home</a></span></li>
+                                                <li class="active"><span> <%= title %></span></li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             </section>
+<section class="about__area section-space-top section-space-bottom-1">
+                <div class="container">
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Server Manager</h4>
+    <button class="btn btn-primary" onclick="refreshStats()"><i class="ri-refresh-line"></i> Refresh</button>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3">
+                        <div class="avatar-sm bg-primary bg-opacity-10 rounded">
+                            <i class="ri-server-line fs-4 text-primary d-flex align-items-center justify-content-center h-100"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0">Hostname</h6>
+                        <p class="mb-0 text-muted"><%= system.hostname %></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3">
+                        <div class="avatar-sm bg-success bg-opacity-10 rounded">
+                            <i class="ri-time-line fs-4 text-success d-flex align-items-center justify-content-center h-100"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0">Uptime</h6>
+                        <p class="mb-0 text-muted"><%= system.uptime %></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3">
+                        <div class="avatar-sm bg-warning bg-opacity-10 rounded">
+                            <i class="ri-cpu-line fs-4 text-warning d-flex align-items-center justify-content-center h-100"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0">CPU</h6>
+                        <p class="mb-0 text-muted"><%= system.cpuCores %> cores</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3">
+                        <div class="avatar-sm bg-info bg-opacity-10 rounded">
+                            <i class="ri-memory-line fs-4 text-info d-flex align-items-center justify-content-center h-100"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0">Memory</h6>
+                        <p class="mb-0 text-muted"><%= memory.used %> / <%= memory.total %></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header"><strong>System</strong></div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <tr><td>Platform</td><td><%= system.platform %></td></tr>
+                    <tr><td>Architecture</td><td><%= system.arch %></td></tr>
+                    <tr><td>Kernel</td><td><%= system.release %></td></tr>
+                    <tr><td>CPU</td><td><%= system.cpuModel %></td></tr>
+                    <tr><td>CPU Cores</td><td><%= system.cpuCores %></td></tr>
+                    <tr><td>Load Average</td><td><%= system.loadAvg['1min'] %> / <%= system.loadAvg['5min'] %> / <%= system.loadAvg['15min'] %></td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header"><strong>Memory</strong></div>
+            <div class="card-body">
+                <div class="progress mb-2" style="height: 25px;">
+                    <div class="progress-bar bg-info" style="width: <%= memory.percent %>%"><%= memory.percent %>%</div>
+                </div>
+                <table class="table table-sm mb-0">
+                    <tr><td>Total</td><td><%= memory.total %></td></tr>
+                    <tr><td>Used</td><td><%= memory.used %></td></tr>
+                    <tr><td>Free</td><td><%= memory.free %></td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header"><strong>Disk</strong></div>
+            <div class="card-body">
+                <div class="progress mb-2" style="height: 25px;">
+                    <div class="progress-bar bg-warning" style="width: <%= disk.percent %>"><%= disk.percent %></div>
+                </div>
+                <table class="table table-sm mb-0">
+                    <tr><td>Filesystem</td><td><%= disk.filesystem %></td></tr>
+                    <tr><td>Total</td><td><%= disk.size %></td></tr>
+                    <tr><td>Used</td><td><%= disk.used %></td></tr>
+                    <tr><td>Available</td><td><%= disk.available %></td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header"><strong>Services</strong></div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Service</th>
+                        <th>Status</th>
+                        <th style="width:200px">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% services.forEach(function(svc) { %>
+                        <tr>
+                            <td><strong><%= svc.name %></strong></td>
+                            <td>
+                                <span class="badge bg-<%= svc.running ? 'success' : 'danger' %>">
+                                    <i class="ri-checkbox-circle-fill"></i> <%= svc.running ? 'Running' : 'Stopped' %>
+                                </span>
+                            </td>
+                            <td>
+                                <% if (svc.startCmd) { %>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-<%= svc.running ? 'warning' : 'success' %>" onclick="toggleService('<%= svc.name %>', <%= !svc.running %>)" title="<%= svc.running ? 'Stop' : 'Start' %>">
+                                            <i class="ri-<%= svc.running ? 'stop-circle' : 'play-circle' %>-line"></i> <%= svc.running ? 'Stop' : 'Start' %>
+                                        </button>
+                                    </div>
+                                <% } else { %>
+                                    <span class="text-muted">System service</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-header"><strong>Network Interfaces</strong></div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr><th>Interface</th><th>IP Address</th><th>Netmask</th></tr>
+                    </thead>
+                    <tbody>
+                        <% network.forEach(function(n) { %>
+                            <tr>
+                                <td><%= n.interface %></td>
+                                <td><code><%= n.address %></code></td>
+                                <td><%= n.netmask %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-header"><strong>Top Processes</strong></div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr><th>PID</th><th>User</th><th>CPU%</th><th>MEM%</th><th>Command</th></tr>
+                        </thead>
+                        <tbody>
+                            <% processes.forEach(function(p) { %>
+                                <tr>
+                                    <td><%= p.pid %></td>
+                                    <td><%= p.user %></td>
+                                    <td><%= p.cpu %></td>
+                                    <td><%= p.mem %></td>
+                                    <td><small><%= p.command.substring(0, 60) %><%= p.command.length > 60 ? '...' : '' %></small></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+</section>
+
+<script>
+function toggleService(name, start) {
+    const action = start ? 'Start' : 'Stop';
+    Swal.fire({
+        title: action + ' ' + name + '?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, ' + action.toLowerCase()
+    }).then(result => {
+        if (result.isConfirmed) {
+            fetch('/api/server/' + (start ? 'restart' : 'stop'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: name + ' ' + action.toLowerCase() + 'ed', timer: 1500, showConfirmButton: false })
+                        .then(() => window.location.reload());
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Error', text: data.error });
+                }
+            })
+            .catch(err => Swal.fire({ icon: 'error', title: 'Error', text: err.message }));
+        }
+    });
+}
+
+function refreshStats() {
+    window.location.reload();
+}
+</script>

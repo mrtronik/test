@@ -1,0 +1,363 @@
+             <section class="breadcrumb__before p-relative">
+                <div class="breadcrumb__area overflow-hidden position-relative" data-background="assets/imgs/shapes/breadcrumb-shape.png">
+                    <div class="breadcrumb__shapes">
+                        <div class="breadcrumb__shapes-shape-1"></div>
+                        <div class="breadcrumb__shapes-shape-2"></div>
+                        <div class="breadcrumb__shapes-shape-3"></div>
+                        <div class="breadcrumb__shapes-shape-4"></div>
+                        <div class="breadcrumb__shapes-shape-5 upDown">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-1.png" alt="img not found">
+                        </div>
+                        <div class="breadcrumb__shapes-shape-6 line-to-bottom-360">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-2.png" alt="img not found">
+                        </div>
+                        <div class="breadcrumb__shapes-shape-7 line-to-bottom-360-l">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-3.png" alt="img not found">
+                        </div>
+                        <div class="breadcrumb__shapes-shape-8 leftRight">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-4.png" alt="img not found">
+                        </div>
+                        <div class="breadcrumb__shapes-shape-9">
+                            <img src="assets/imgs/shapes/breadcrumb-shape-5.png" alt="img not found">
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="row align-items-center justify-content-between">
+                            <div class="col-12">
+                                <div class="breadcrumb__content">
+                                    <div class="breadcrumb__title-wrapper">
+                                        <h1 class="breadcrumb__title"><%= title %></h1>
+                                    </div>
+                                    <div class="breadcrumb__menu">
+                                        <nav>
+                                            <ul>
+                                                <li><span><a href="/dashboard"> <img src="assets/imgs/icon/home-icon.png" alt="img not found">Home</a></span></li>
+                                                <li class="active"><span> <%= title %></span></li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             </section>
+<section class="about__area section-space-top section-space-bottom-1">
+                <div class="container">
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h4 class="mb-0">DNS Manager</h4>
+        <small class="text-muted">Manage DNS zones and records (BIND9)</small>
+    </div>
+    <div class="d-flex gap-2">
+        <span class="badge <%= bindActive ? 'bg-success' : 'bg-danger' %> fs-6 py-2">
+            <i class="ri-checkbox-circle-fill"></i> BIND9: <%= bindActive ? 'Running' : 'Stopped' %>
+        </span>
+        <button class="btn btn-primary" onclick="showCreateZoneModal()"><i class="ri-add-line"></i> Add Zone</button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header"><strong>Zones</strong></div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush" style="max-height:500px;overflow-y:auto">
+                    <% if (zones && zones.length > 0) { %>
+                        <% zones.forEach(function(z) { %>
+                            <a href="/dns?domain=<%= z.name %>" class="list-group-item list-group-item-action <%= selectedDomain === z.name ? 'active' : '' %>">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="ri-earth-line"></i> <strong><%= z.name %></strong>
+                                        <br><small class="text-muted"><%= z.recordCount %> records</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="event.preventDefault();deleteZone('<%= z.name %>')" title="Delete Zone">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </button>
+                                </div>
+                            </a>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="list-group-item text-center text-muted py-4">No DNS zones</div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <% if (selectedDomain && zoneData) { %>
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong><i class="ri-earth-line"></i> <%= selectedDomain %> - Records</strong>
+                    <button class="btn btn-sm btn-primary" onclick="showAddRecordModal()"><i class="ri-add-line"></i> Add Record</button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>TTL</th>
+                                    <th>Type</th>
+                                    <th>Value</th>
+                                    <th style="width:80px">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (zoneData.records && zoneData.records.length > 0) { %>
+                                    <% zoneData.records.forEach(function(r) { %>
+                                        <tr>
+                                            <td><%= r.name %></td>
+                                            <td><%= r.ttl %></td>
+                                            <td><span class="badge bg-primary"><%= r.type %></span></td>
+                                            <td><code><%= r.value %></code></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-danger" onclick="deleteRecord('<%= selectedDomain %>', '<%= r.name %>', '<%= r.type %>', '<%= r.value %>')">
+                                                    <i class="ri-delete-bin-line"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr><td colspan="5" class="text-center text-muted py-3">No records found</td></tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <% if (zoneData.soa) { %>
+            <div class="card mt-3">
+                <div class="card-header"><strong>SOA Record</strong></div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6"><strong>Primary NS:</strong> <%= zoneData.soa.mname %></div>
+                        <div class="col-md-6"><strong>Admin:</strong> <%= zoneData.soa.rname %></div>
+                        <div class="col-md-6"><strong>Serial:</strong> <%= zoneData.soa.serial %></div>
+                        <div class="col-md-6"><strong>Refresh:</strong> <%= zoneData.soa.refresh %>s</div>
+                        <div class="col-md-6"><strong>Retry:</strong> <%= zoneData.soa.retry %>s</div>
+                        <div class="col-md-6"><strong>Expire:</strong> <%= zoneData.soa.expire %>s</div>
+                        <div class="col-md-6"><strong>Min TTL:</strong> <%= zoneData.soa.minimum %>s</div>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+        <% } else { %>
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="ri-earth-line fs-1 text-muted"></i>
+                    <h5 class="mt-3 text-muted">Select a zone to view records</h5>
+                    <p class="text-muted">Choose a domain from the left panel or create a new zone.</p>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+    </div>
+</section>
+
+<!-- Create Zone Modal -->
+<div class="modal fade" id="createZoneModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="ri-earth-line"></i> Create DNS Zone</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Domain Name</label>
+                    <input type="text" class="form-control" id="newZoneDomain" placeholder="example.com" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Zone Type</label>
+                    <select class="form-select" id="newZoneType">
+                        <option value="master">Master</option>
+                        <option value="slave">Slave</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitCreateZone()"><i class="ri-add-line"></i> Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Record Modal -->
+<div class="modal fade" id="addRecordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="ri-add-circle-line"></i> Add DNS Record</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="recordDomain">
+                <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" id="recordName" placeholder="@ or www or mail">
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">TTL</label>
+                        <input type="number" class="form-control" id="recordTtl" value="3600">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Type</label>
+                        <select class="form-select" id="recordType">
+                            <option value="A">A</option>
+                            <option value="AAAA">AAAA</option>
+                            <option value="CNAME">CNAME</option>
+                            <option value="MX">MX</option>
+                            <option value="TXT">TXT</option>
+                            <option value="NS">NS</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Value</label>
+                        <input type="text" class="form-control" id="recordValue" placeholder="192.168.1.1">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitAddRecord()"><i class="ri-add-line"></i> Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showCreateZoneModal() {
+    document.getElementById('newZoneDomain').value = '';
+    new bootstrap.Modal(document.getElementById('createZoneModal')).show();
+}
+
+function submitCreateZone() {
+    const domain = document.getElementById('newZoneDomain').value.trim();
+    const type = document.getElementById('newZoneType').value;
+    if (!domain) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Domain name is required' });
+        return;
+    }
+    fetch('/api/dns/create-zone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain, type })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: 'Zone Created', timer: 1500, showConfirmButton: false })
+                .then(() => window.location.href = '/dns?domain=' + encodeURIComponent(domain));
+        } else {
+            Swal.fire({ icon: 'error', title: 'Error', text: data.error });
+        }
+    })
+    .catch(err => Swal.fire({ icon: 'error', title: 'Error', text: err.message }));
+}
+
+function deleteZone(domain) {
+    Swal.fire({
+        title: 'Delete Zone?',
+        text: 'This will permanently delete the DNS zone: ' + domain,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete'
+    }).then(result => {
+        if (result.isConfirmed) {
+            fetch('/api/dns/delete-zone', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ domain })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Zone Deleted', timer: 1500, showConfirmButton: false })
+                        .then(() => window.location.href = '/dns');
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Error', text: data.error });
+                }
+            })
+            .catch(err => Swal.fire({ icon: 'error', title: 'Error', text: err.message }));
+        }
+    });
+}
+
+function showAddRecordModal() {
+    document.getElementById('recordDomain').value = '<%= selectedDomain %>';
+    document.getElementById('recordName').value = '';
+    document.getElementById('recordValue').value = '';
+    document.getElementById('recordTtl').value = '3600';
+    document.getElementById('recordType').value = 'A';
+    new bootstrap.Modal(document.getElementById('addRecordModal')).show();
+}
+
+function submitAddRecord() {
+    const domain = document.getElementById('recordDomain').value;
+    const name = document.getElementById('recordName').value.trim();
+    const ttl = document.getElementById('recordTtl').value;
+    const type = document.getElementById('recordType').value;
+    const value = document.getElementById('recordValue').value.trim();
+
+    if (!name || !value) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Name and Value are required' });
+        return;
+    }
+
+    fetch('/api/dns/add-record', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain, name, ttl, type, value })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: 'Record Added', timer: 1500, showConfirmButton: false })
+                .then(() => window.location.reload());
+        } else {
+            Swal.fire({ icon: 'error', title: 'Error', text: data.error });
+        }
+    })
+    .catch(err => Swal.fire({ icon: 'error', title: 'Error', text: err.message }));
+}
+
+function deleteRecord(domain, name, type, value) {
+    Swal.fire({
+        title: 'Delete Record?',
+        text: name + ' ' + type + ' ' + value,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete'
+    }).then(result => {
+        if (result.isConfirmed) {
+            fetch('/api/dns/delete-record', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ domain, name, type, value })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Record Deleted', timer: 1500, showConfirmButton: false })
+                        .then(() => window.location.reload());
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Error', text: data.error });
+                }
+            })
+            .catch(err => Swal.fire({ icon: 'error', title: 'Error', text: err.message }));
+        }
+    });
+}
+</script>

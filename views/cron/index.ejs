@@ -1,0 +1,241 @@
+<div class="content-page">
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box">
+                        <h4 class="page-title"><i class="ri-time-line"></i> Cron Job Manager</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Add Cron Job</h5>
+                            <form id="cronForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Schedule</label>
+                                    <div class="row g-2">
+                                        <div class="col">
+                                            <input type="text" class="form-control" id="cronMinute" placeholder="*" value="*">
+                                            <small class="text-muted">Minute (0-59)</small>
+                                        </div>
+                                        <div class="col">
+                                            <input type="text" class="form-control" id="cronHour" placeholder="*" value="*">
+                                            <small class="text-muted">Hour (0-23)</small>
+                                        </div>
+                                        <div class="col">
+                                            <input type="text" class="form-control" id="cronDay" placeholder="*">
+                                            <small class="text-muted">Day (1-31)</small>
+                                        </div>
+                                        <div class="col">
+                                            <input type="text" class="form-control" id="cronMonth" placeholder="*">
+                                            <small class="text-muted">Month (1-12)</small>
+                                        </div>
+                                        <div class="col">
+                                            <input type="text" class="form-control" id="cronWeekday" placeholder="*">
+                                            <small class="text-muted">Weekday (0-6)</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Quick Presets</label>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setPreset('* * * * *')">Every minute</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setPreset('*/5 * * * *')">Every 5 min</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setPreset('0 * * * *')">Every hour</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setPreset('0 0 * * *')">Daily</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setPreset('0 0 * * 0')">Weekly</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setPreset('0 0 1 * *')">Monthly</button>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Preview</label>
+                                    <div class="alert alert-info py-2 mb-0" id="cronPreview">
+                                        <code id="cronPreviewText">* * * * *</code>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Command <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="cronCommand" required placeholder="/usr/bin/php /path/to/script.php">
+                                </div>
+
+                                <input type="hidden" id="cronEditIndex" value="-1">
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-secondary" id="btnCancelEdit" style="display:none" onclick="cancelEdit()">Cancel</button>
+                                    <button type="submit" class="btn btn-primary" id="btnAddCron">
+                                        <i class="ri-add-line"></i> Add Job
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Cron Jobs (<%= jobs.length %>)</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Schedule</th>
+                                            <th>Command</th>
+                                            <th width="100">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (jobs.length === 0) { %>
+                                            <tr><td colspan="4" class="text-center text-muted py-4">No cron jobs configured</td></tr>
+                                        <% } else { %>
+                                            <% jobs.forEach(function(job, idx) { %>
+                                                <tr>
+                                                    <td><%= idx + 1 %></td>
+                                                    <td><code><%= job.minute %> <%= job.hour %> <%= job.dayOfMonth %> <%= job.month %> <%= job.dayOfWeek %></code></td>
+                                                    <td class="text-break"><%= job.command %></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary" onclick="editJob(<%= idx %>, '<%= job.minute %>', '<%= job.hour %>', '<%= job.dayOfMonth %>', '<%= job.month %>', '<%= job.dayOfWeek %>', `<%= job.command.replace(/`/g, '\\`') %>`)">
+                                                            <i class="ri-edit-line"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteJob(<%= idx %>)">
+                                                            <i class="ri-delete-bin-line"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <% if (systemJobs.length > 0) { %>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">System Cron Jobs</h5>
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-0">
+                                    <thead>
+                                        <tr><th>File</th><th>Command</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <% systemJobs.slice(0, 10).forEach(function(job) { %>
+                                            <tr>
+                                                <td><code><%= job.file %></code></td>
+                                                <td class="text-break"><small><%= job.command %></small></td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updatePreview() {
+    const m = document.getElementById('cronMinute').value || '*';
+    const h = document.getElementById('cronHour').value || '*';
+    const d = document.getElementById('cronDay').value || '*';
+    const mo = document.getElementById('cronMonth').value || '*';
+    const w = document.getElementById('cronWeekday').value || '*';
+    document.getElementById('cronPreviewText').textContent = `${m} ${h} ${d} ${mo} ${w}`;
+}
+
+document.querySelectorAll('#cronMinute, #cronHour, #cronDay, #cronMonth, #cronWeekday').forEach(el => {
+    el.addEventListener('input', updatePreview);
+});
+
+function setPreset(schedule) {
+    const parts = schedule.split(' ');
+    document.getElementById('cronMinute').value = parts[0];
+    document.getElementById('cronHour').value = parts[1];
+    document.getElementById('cronDay').value = parts[2];
+    document.getElementById('cronMonth').value = parts[3];
+    document.getElementById('cronWeekday').value = parts[4];
+    updatePreview();
+}
+
+function editJob(idx, m, h, d, mo, w, cmd) {
+    document.getElementById('cronEditIndex').value = idx;
+    document.getElementById('cronMinute').value = m;
+    document.getElementById('cronHour').value = h;
+    document.getElementById('cronDay').value = d;
+    document.getElementById('cronMonth').value = mo;
+    document.getElementById('cronWeekday').value = w;
+    document.getElementById('cronCommand').value = cmd;
+    document.getElementById('btnAddCron').innerHTML = '<i class="ri-save-line"></i> Update Job';
+    document.getElementById('btnCancelEdit').style.display = '';
+    updatePreview();
+}
+
+function cancelEdit() {
+    document.getElementById('cronEditIndex').value = -1;
+    document.getElementById('cronCommand').value = '';
+    document.getElementById('btnAddCron').innerHTML = '<i class="ri-add-line"></i> Add Job';
+    document.getElementById('btnCancelEdit').style.display = 'none';
+    setPreset('* * * * *');
+}
+
+document.getElementById('cronForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const idx = parseInt(document.getElementById('cronEditIndex').value);
+    const schedule = [
+        document.getElementById('cronMinute').value || '*',
+        document.getElementById('cronHour').value || '*',
+        document.getElementById('cronDay').value || '*',
+        document.getElementById('cronMonth').value || '*',
+        document.getElementById('cronWeekday').value || '*'
+    ].join(' ');
+    const command = document.getElementById('cronCommand').value;
+
+    try {
+        let res;
+        if (idx >= 0) {
+            res = await fetch('/api/cron/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ index: idx, schedule, command })
+            });
+        } else {
+            res = await fetch('/api/cron/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ schedule, command })
+            });
+        }
+        const data = await res.json();
+        if (data.error) Swal.fire('Error', data.error, 'error');
+        else Swal.fire('Success', idx >= 0 ? 'Job updated!' : 'Job added!', 'success').then(() => location.reload());
+    } catch (err) {
+        Swal.fire('Error', err.message, 'error');
+    }
+});
+
+async function deleteJob(idx) {
+    const result = await Swal.fire({ title: 'Delete cron job?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Yes, delete' });
+    if (result.isConfirmed) {
+        const res = await fetch('/api/cron/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ index: idx })
+        });
+        const data = await res.json();
+        if (data.error) Swal.fire('Error', data.error, 'error');
+        else Swal.fire('Deleted!', 'Job removed.', 'success').then(() => location.reload());
+    }
+}
+</script>

@@ -1,0 +1,150 @@
+ <%- include('../partials/page-header', {
+    title: 'System Information',
+    breadcrumb: [
+        { text: 'Website', url: '/websites' },
+		{ text: 'Add', url: '/warning-line/add' }
+    ],
+    buttons: [
+        {
+            text: 'Back',
+            url: '/dashboard',
+            icon: 'fas fa-arrow-left',
+            color: 'gray'
+        }
+	
+    ]
+}) %>
+ <div class="content">
+                    <div class="container-fluid">
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="page-title-box">
+                                    <h4 class="page-title"><i class="ri-add-circle-line me-2"></i>Add Website</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <% if (typeof error !== 'undefined' && error) { %>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <i class="ri-error-warning-line me-1"></i> <%= error %>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            </div>
+                        </div>
+                        <% } %>
+
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="header-title">Website Configuration</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <form action="/websites" method="POST">
+                                            <div class="mb-3">
+                                                <label for="domain" class="form-label">Domain Name <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="domain" name="domain" placeholder="example.com" required>
+                                                <div class="form-text">Enter the domain name without http:// or www.</div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="document_root" class="form-label">Document Root</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">/home/public_html/</span>
+                                                    <input type="text" class="form-control" id="doc-root-slug" placeholder="example.com" required>
+                                                    <input type="hidden" class="form-control" id="document_root" name="document_root">
+                                                </div>
+                                                <div class="form-text">Files will be served from this directory.</div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="php_version" class="form-label">PHP Version</label>
+                                                <select class="form-select" id="php_version" name="php_version">
+                                                    <option value="8.2" selected>PHP 8.2</option>
+                                                    <option value="8.1">PHP 8.1</option>
+                                                    <option value="8.0">PHP 8.0</option>
+                                                    <option value="7.4">PHP 7.4</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="create-index" checked>
+                                                    <label class="form-check-label" for="create-index">Create default index.html</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="ri-add-line me-1"></i> Create Website
+                                                </button>
+                                                <a href="/websites" class="btn btn-light">Cancel</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="header-title">What happens?</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-start gap-3 mb-3">
+                                            <div class="avatar-sm flex-shrink-0">
+                                                <span class="avatar-title text-bg-primary rounded-3"><i class="ri-folder-add-line"></i></span>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1">Create Directory</h6>
+                                                <p class="text-muted mb-0 fs-13">Document root folder will be created at /home/public_html/</p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-start gap-3 mb-3">
+                                            <div class="avatar-sm flex-shrink-0">
+                                                <span class="avatar-title text-bg-success rounded-3"><i class="ri-file-code-line"></i></span>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1">Default Index</h6>
+                                                <p class="text-muted mb-0 fs-13">A default index.html page will be created</p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-start gap-3 mb-3">
+                                            <div class="avatar-sm flex-shrink-0">
+                                                <span class="avatar-title text-bg-warning rounded-3"><i class="ri-server-line"></i></span>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1">OLS Virtual Host</h6>
+                                                <p class="text-muted mb-0 fs-13">OpenLiteSpeed vhost config will be generated</p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-start gap-3">
+                                            <div class="avatar-sm flex-shrink-0">
+                                                <span class="avatar-title text-bg-info rounded-3"><i class="ri-restart-line"></i></span>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1">Reload OLS</h6>
+                                                <p class="text-muted mb-0 fs-13">OLS will be reloaded to apply the changes</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+<script>
+document.getElementById('domain').addEventListener('input', function() {
+    document.getElementById('doc-root-slug').value = this.value;
+});
+
+document.querySelector('form').addEventListener('submit', function() {
+    var slug = document.getElementById('doc-root-slug').value;
+    document.getElementById('document_root').value = '/home/public_html/' + slug;
+});
+</script>
